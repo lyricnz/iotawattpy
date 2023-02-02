@@ -41,5 +41,7 @@ class Connection:
             # if decode_json:
             #    return (await resp.json())
             return resp
-        except httpx.HTTPError as err:
-            LOGGER.error("Err: %s", err)
+        except httpx.RequestError as e:
+            LOGGER.error("An error occurred while requesting %s.", e.request.url)
+        except httpx.HTTPStatusError as exc:
+            LOGGER.error("Error response %s while requesting %s.", e.response.status_code, e.request.url)

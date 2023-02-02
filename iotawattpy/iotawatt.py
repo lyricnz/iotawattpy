@@ -45,6 +45,8 @@ class Iotawatt:
     async def connect(self):
         url = "http://{}/status?wifi=yes".format(self._ip)
         results = await self._connection.get(url, self._username, self._password)
+        if results == None:
+            return False
         if results.status_code == httpx.codes.OK:
             try:
                 jsonResults = results.json()

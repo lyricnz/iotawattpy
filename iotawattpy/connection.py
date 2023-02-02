@@ -43,5 +43,5 @@ class Connection:
             return resp
         except httpx.RequestError as e:
             LOGGER.error("An error occurred while requesting %s.", e.request.url)
-        except httpx.HTTPStatusError as exc:
+        except httpx.HTTPStatusError as e:
             LOGGER.error("Error response %s while requesting %s.", e.response.status_code, e.request.url)

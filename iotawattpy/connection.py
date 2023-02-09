@@ -41,5 +41,6 @@ class Connection:
             # if decode_json:
             #    return (await resp.json())
             return resp
-        except httpx.HTTPError as err:
-            LOGGER.error("Err: %s", err)
+        except httpx.HTTPError as e:
+            LOGGER.debug(e.__doc__.strip())
+            raise e

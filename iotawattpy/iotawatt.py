@@ -45,6 +45,8 @@ class Iotawatt:
     async def connect(self):
         url = "http://{}/status?wifi=yes".format(self._ip)
         results = await self._connection.get(url, self._username, self._password)
+        if results == None:
+            return False
         if results.status_code == httpx.codes.OK:
             try:
                 jsonResults = results.json()
@@ -71,7 +73,8 @@ class Iotawatt:
 
     async def update(self, timespan=30, lastUpdate=None):
         if not self._getMACFlag:
-            await self.connect()
+            if await self.connect() == None:
+                return False
             self._getMACFlag = True
         await self._refreshSensors(timespan, lastUpdate)
 
@@ -151,6 +154,8 @@ class Iotawatt:
         sensors = self._sensors["sensors"]
 
         response = await self._getInputsandOutputs()
+        if response == None:
+            return False
         results = response.text
         results = json.loads(results)
         LOGGER.debug("IOResults: %s", results)
@@ -158,6 +163,8 @@ class Iotawatt:
         outputs = results["outputs"]
 
         query = await self._getQueryShowSeries()
+        if query == None:
+            return False
         query = query.text
         query = json.loads(query)
         LOGGER.debug("Query: %s", query)
@@ -239,6 +246,8 @@ class Iotawatt:
         response = await self._getQuerySelectSeriesCurrent(
             current_query_names, timespan
         )
+        if response == None:
+            return False
         values = json.loads(response.text)
         LOGGER.debug("Val: %s", values)
 
@@ -255,6 +264,8 @@ class Iotawatt:
         response = await self._getQuerySelectSeriesIntegrate(
             integrated_total_query_names, self._integratedInterval
         )
+        if response == None:
+            return False
         values = json.loads(response.text)
         LOGGER.debug("Val: %s", values)
 
@@ -299,6 +310,8 @@ class Iotawatt:
             now.isoformat().split("+")[0] + "Z",
             precision=".d3",
         )
+        if response == None:
+            return False
         values = json.loads(response.text)
         LOGGER.debug("Val: %s", values)
 

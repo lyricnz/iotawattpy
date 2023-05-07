@@ -285,9 +285,10 @@ class Iotawatt:
         # incorrect result. As a workaround, we use UTC.
         now = datetime.now(tz=timezone.utc)
 
-        # The iotawatt only supports rounded seconds. We also ound to the nearest 30s
+        # The iotawatt only supports rounded seconds. We also round to the nearest 5s
         seconds = now.second
-        diff = seconds - 30 if seconds >= 30 else seconds
+        # Difference will be the remainder from a whole 5 seconds
+        diff = seconds % 5
         now -= timedelta(seconds=diff, microseconds=now.microsecond)
 
         if lastUpdate is None:
@@ -301,7 +302,7 @@ class Iotawatt:
         )
         if now == lastUpdate:
             LOGGER.warning(
-                "Nothing to query, update() called too soon, must wait {timespan}"
+                f"Nothing to query, update() called too soon, must wait {timespan}"
             )
             return
         response = await self._getQuerySelectSeriesIntegrate(

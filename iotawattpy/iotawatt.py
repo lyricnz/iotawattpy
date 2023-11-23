@@ -140,15 +140,15 @@ class Iotawatt:
                 suffix=".wh",
                 fromStart=True,
             )
-            self._createOrUpdateSensor(
-                sensors,
-                entity + "_energy",
-                channel_nbr,
-                base_name,
-                type,
-                "WattHours",
-                suffix=".wh",
-            )
+            # self._createOrUpdateSensor(
+            #     sensors,
+            #     entity + "_energy",
+            #     channel_nbr,
+            #     base_name,
+            #     type,
+            #     "WattHours",
+            #     suffix=".wh",
+            # )
 
     async def _refreshSensors(self, timespan, lastUpdate):
         sensors = self._sensors["sensors"]
@@ -355,6 +355,8 @@ class Iotawatt:
         - d - The current day
         See also:https://docs.iotawatt.com/en/02_06_03/query.html#relative-time
         """
+        if not sensor_names:
+            return None
         url = "http://{}/query".format(self._ip)
         strSeries = f"{precision},".join(sensor_names) + precision
         url = (

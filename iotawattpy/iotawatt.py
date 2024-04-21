@@ -173,19 +173,19 @@ class Iotawatt:
 
         # Check and remove a sensor if it exists in memory but not from the query
         keys_to_be_removed = []
-        LOGGER.debug("SensorKeys: %s", sensors.items())
+        # LOGGER.debug("SensorKeys: %s", sensors.items())
         for entity, sensor in sensors.items():
             flag = False
-            for i in range(len(query["series"])):
-                queryName = query["series"][i]["name"]
-                LOGGER.debug("Compare: %s (base:%s) - %s", sensor.getName(), sensor.getBaseName(), queryName)
-                if sensor.getBaseName() == queryName:
+            query_names = [q["name"] for q in query["series"]]
+            for query_name in query_names:
+                LOGGER.debug("Compare: %s (base:%s) - %s", sensor.getName(), sensor.getBaseName(), query_name)
+                if sensor.getBaseName() == query_name:
                     flag = True
                     break
                 else:
                     continue
             if not flag:
-                LOGGER.debug("Not Found: %s - %s", queryName, sensor.getName())
+                LOGGER.debug("Not Found: %s", sensor.getName())
                 LOGGER.debug("Adding to be removed: %s", entity)
                 keys_to_be_removed.append(entity)
 
@@ -266,7 +266,7 @@ class Iotawatt:
         response = await self._getQuerySelectSeriesIntegrate(
             integrated_total_query_names, self._integratedInterval
         )
-        if response == None:
+        if response is None:
             return False
         values = json.loads(response.text)
         LOGGER.debug("Val: %s", values)

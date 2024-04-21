@@ -36,8 +36,7 @@ class Iotawatt:
         self._includeNonTotalSensors = includeNonTotalSensors
         self._lastUpdateTime = None
 
-        self._sensors = {}
-        self._sensors["sensors"] = {}
+        self._sensors = {"sensors": {}}
 
         self._macAddress = ""
         self._getMACFlag = False
@@ -47,16 +46,16 @@ class Iotawatt:
     async def connect(self):
         url = "http://{}/status?wifi=yes".format(self._ip)
         results = await self._connection.get(url, self._username, self._password)
-        if results == None:
+        if results is None:
             return False
         if results.status_code == httpx.codes.OK:
             try:
-                jsonResults = results.json()
+                json_results = results.json()
             except json.JSONDecodeError:
                 raise
 
             try:
-                self._macAddress = jsonResults["wifi"]["mac"].replace(":", "")
+                self._macAddress = json_results["wifi"]["mac"].replace(":", "")
                 LOGGER.debug("MAC: %s", self._macAddress)
             except KeyError:
                 raise
@@ -75,7 +74,7 @@ class Iotawatt:
 
     async def update(self, timespan=30, lastUpdate=None):
         if not self._getMACFlag:
-            if await self.connect() == None:
+            if await self.connect() is None:
                 return False
             self._getMACFlag = True
         await self._refreshSensors(timespan, lastUpdate)
@@ -157,7 +156,7 @@ class Iotawatt:
         sensors = self._sensors["sensors"]
 
         response = await self._getInputsandOutputs()
-        if response == None:
+        if response is None:
             return False
         results = response.text
         results = json.loads(results)
@@ -166,7 +165,7 @@ class Iotawatt:
         outputs = results["outputs"]
 
         query = await self._getQueryShowSeries()
-        if query == None:
+        if query is None:
             return False
         query = query.text
         query = json.loads(query)
@@ -249,7 +248,7 @@ class Iotawatt:
         response = await self._getQuerySelectSeriesCurrent(
             current_query_names, timespan
         )
-        if response == None:
+        if response is None:
             return False
         values = json.loads(response.text)
         LOGGER.debug("Val: %s", values)
@@ -314,7 +313,7 @@ class Iotawatt:
             now.isoformat().split("+")[0] + "Z",
             precision=".d3",
         )
-        if response == None:
+        if response is None:
             return False
         values = json.loads(response.text)
         LOGGER.debug("Val: %s", values)

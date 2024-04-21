@@ -43,7 +43,7 @@ class Sensor:
         self._sensor_id = hub_mac_address + "_" + self._type + "_" + self.getName()
 
     def getSourceName(self):
-        return self._base_name + (f"{self._suffix}" if self._suffix != None else "")
+        return self._base_name + (f"{self._suffix}" if self._suffix is not None else "")
 
     def getName(self):
         return self.getSourceName() + ("_last" if self._suffix == ".wh" and not self._fromStart else "")
